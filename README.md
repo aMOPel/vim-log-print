@@ -9,6 +9,8 @@ like commenter plugin, but for print/log statements
 * preserve indentation
 * toggle on and off
 * define your own language specific strings
+* puts cursor before closing parenthesis
+* goes into insert mode at the right spot when calling on an empty line
 
 ## defaults
 
