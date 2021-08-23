@@ -3,8 +3,9 @@ if exists("g:loaded_log_print") || v:version < 700
 endif
 let g:loaded_log_print = 1
 
-let g:log_print#default_mappings = 1
-let g:log_print#languages = {}
+if !exists("g:log_print#default_mappings")
+	let g:log_print#default_mappings = 1
+endif
 
 let s:default_languages = #{
 	\ python: ["print(", ")"],
@@ -15,7 +16,9 @@ let s:default_languages = #{
 function! s:get_languages() abort
 	let d = {}
 	call extend(d, s:default_languages)
-	call extend(d, g:log_print#languages)
+	if exists("g:log_print#languages")
+		call extend(d, g:log_print#languages)
+	endif
 	return d
 endfunction
 
