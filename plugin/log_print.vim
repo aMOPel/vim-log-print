@@ -1,18 +1,16 @@
-
 if exists("g:loaded_log_print") || v:version < 700
-  finish
+	finish
 endif
 let g:loaded_log_print = 1
 
 let g:log_print#default_mappings = 1
-
 let g:log_print#languages = {}
 
 let s:default_languages = #{
-			\ python: ["print(", ")"],
-			\ javascript: ["console.log(", ")"],
-			\ vim: ["echomsg "],
-			\ }
+	\ python: ["print(", ")"],
+	\ javascript: ["console.log(", ")"],
+	\ vim: ["echomsg "],
+	\ }
 
 function! s:get_languages() abort
 	let d = {}
@@ -47,14 +45,14 @@ function! s:add(wrap=["print(", ")"]) abort
 	call setline(line_nr, wrapped)
 	call cursor(line_nr, strchars(matches[1]) + strchars(matches[2]) + strchars(a:wrap[0]))
 	if strchars(matches[2]) == 0
-		if wrapped == matches[1] . get(a:wrap, 0, '') 
+		if wrapped == matches[1] . get(a:wrap, 0, '')
 			startinsert!
 		else
 			startinsert
 		endif
 	endif
 endfunction
-echomsg 
+
 command! LogPrintToggle eval has_key(s:get_languages(), &ft) ? s:toggle(get(s:get_languages(), &ft)) : s:toggle()
 
 if g:log_print#default_mappings
