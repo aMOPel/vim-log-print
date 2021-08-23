@@ -43,7 +43,7 @@ function! s:add(wrap=["print(", ")"]) abort
 	let matches = matchlist(str, '\v^(\s*)([^;]*)(;?)$')
 	let wrapped = matches[1] . get(a:wrap, 0, '') . matches[2] . get(a:wrap, 1, '') . matches[3]
 	call setline(line_nr, wrapped)
-	call cursor(line_nr, strchars(matches[1]) + strchars(matches[2]) + strchars(a:wrap[0]))
+	call cursor(line_nr, strchars(matches[1]) + strchars(matches[2]) + strchars(a:wrap[0]) + 1)
 	if strchars(matches[2]) == 0
 		if wrapped == matches[1] . get(a:wrap, 0, '')
 			startinsert!
