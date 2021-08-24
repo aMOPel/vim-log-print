@@ -8,10 +8,16 @@ if !exists("g:log_print#default_mappings")
 endif
 
 let s:default_languages = #{
-	\ python: ["print(", ")"],
-	\ javascript: ["console.log(", ")"],
-	\ vim: ["echomsg "],
+	\ python: #{pre:"print(", post:")"},
+	\ javascript: #{pre:"console.log(", post:")"},
+	\ vim: #{pre:"echomsg "},
+	\ c: #{insert:1, pre:'printf("%|", ', post:');', preremove:'printf(".*", ', postremove:')'},
+	\ cpp: #{pre:"std::cout << |", post:' << "\n";', preremove:'std::cout.*<<\s', postremove:'\s<<[^;]*'},
 	\ }
+
+function! s:escape(str)
+	return escape(a:str, '^$.*~\[]')
+endfunction
 
 function! s:get_languages() abort
 	let d = {}
@@ -22,41 +28,68 @@ function! s:get_languages() abort
 	return d
 endfunction
 
-function! s:toggle(wrap=["print(", ")"]) abort
+function! s:toggle() abort
 	let line_nr = line('.')
 	let str = getline(line_nr)
-	if match(str, get(a:wrap, 0, '')) == -1
-		call s:add(a:wrap)
+	let wrap = has_key(s:get_languages(), &ft) ? s:get_languages()[&ft] : s:get_languages().python
+	if has_key(wrap, 'preremove') && has_key(wrap, 'postremove')
+		let i = get(wrap, 'preremove', '')
 	else
-		call s:remove(a:wrap)
+		let i = s:escape(substitute(get(wrap, 'pre', ''), '|', '', ""))
+	endif
+	if match(str, i) == -1
+		call s:add(wrap)
+	else
+		call s:remove(wrap)
 	endif
 endfunction
 
-function! s:remove(wrap=["print(", ")"]) abort
+function! s:remove(wrap) abort
 	let line_nr = line('.')
 	let str = getline(line_nr)
-	let matches = matchlist(str, '\(.*\)' . get(a:wrap, 0, '') . '\(.*\)' . get(a:wrap, 1, '') . '\(.*\)$')
+	if has_key(a:wrap, 'preremove') && has_key(a:wrap, 'postremove')
+		let i = get(a:wrap, 'preremove', '')
+		let j = get(a:wrap, 'postremove', '')
+	else
+		let i = s:escape(substitute(get(a:wrap, 'pre', ''), '|', '', ""))
+		let j = s:escape(get(a:wrap, 'post', ''))
+	endif
+	let matches = matchlist(str, '^\(.*\)' . i . '\(.*\)' . j . '\(.*\)$')
 	let unwrapped = matches[1] . matches[2] . matches[3]
 	call setline(line_nr, unwrapped)
 endfunction
 
-function! s:add(wrap=["print(", ")"]) abort
+function! s:add(wrap) abort
 	let line_nr = line('.')
 	let str = getline(line_nr)
+
 	let matches = matchlist(str, '\v^(\s*)([^;]*)(;?)$')
-	let wrapped = matches[1] . get(a:wrap, 0, '') . matches[2] . get(a:wrap, 1, '') . matches[3]
+
+	let cursor_index = match(get(a:wrap, 'pre', ''), '|')
+
+	let i = substitute(get(a:wrap, 'pre', ''), '|', '', "")
+	let j = get(a:wrap,'post', '')
+
+	let semicolon = get(a:wrap, 'post', '')[-1] == ';' ? matches[3] : ''
+	let wrapped = matches[1] . i . matches[2] . j . semicolon
 	call setline(line_nr, wrapped)
-	call cursor(line_nr, strchars(matches[1]) + strchars(matches[2]) + strchars(a:wrap[0]) + 1)
+	if cursor_index >= 0
+		call cursor(line_nr, strchars(matches[1]) + cursor_index + 1)
+	else 
+		call cursor(line_nr, strchars(matches[1]) + strchars(matches[2]) + strchars(get(a:wrap, 'pre', '')) + 1)
+	endif
 	if strchars(matches[2]) == 0
-		if wrapped == matches[1] . get(a:wrap, 0, '')
+		if wrapped == matches[1] . get(a:wrap, 'pre', '')
 			startinsert!
 		else
 			startinsert
 		endif
+	elseif get(a:wrap, 'insert')
+		startinsert
 	endif
 endfunction
 
-command! LogPrintToggle eval has_key(s:get_languages(), &ft) ? s:toggle(get(s:get_languages(), &ft)) : s:toggle()
+command! LogPrintToggle call s:toggle()
 
 if g:log_print#default_mappings
 	nnoremap <silent> gl <esc>:<c-u>LogPrintToggle<cr>

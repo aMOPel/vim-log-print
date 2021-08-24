@@ -26,6 +26,16 @@ test()|;
 // press gl again (in normal mode)
 		|
 ```
+```c
+// example c
+te|st();
+// press gl
+printf("%|", test());
+// press id<esc>
+printf("%d|", test());
+// press gl again
+test();
+```
 
 ## features
 
@@ -33,6 +43,7 @@ test()|;
 * preserve semicolon at end of line
 * toggle on and off
 * define your own language specific strings
+* define your own cursor position
 * puts cursor before closing parenthesis
 * goes into insert mode at the right spot when calling on an empty line
 
@@ -46,15 +57,24 @@ let g:log_print#default_mappings = 1
 nnoremap <silent> gl <esc>:<c-u>LogPrintToggle<cr>
 
 " add more languages strings in here in your rc
-" key must match filetype, values must be array with 1 or 2 strings
+" key must match filetype, values must be array with 1 or 2 or 4 strings
 let g:log_print#languages = {}
 
 " keys in g:log_print#languages override keys in here
 let s:default_languages = #{
-			\ python: ["print(", ")"],
-			\ javascript: ["console.log(", ")"],
-			\ vim: ["echomsg "],
-			\ }
+" one string
+	\ vim: ["echomsg "],
+" two strings
+	\ python: ["print(", ")"],
+	\ javascript: ["console.log(", ")"],			
+" in i=0 and i=1 the magic characters are escaped properly so having eg \n works
+	\ cpp: ["std::cout << ", ' << "\n";'],
+" i=0 contains | which specifies cursor position after adding
+" if i=2 and i=3 are given they are used as regex for removal
+" this is necessay when you plan to modify the added strings
+" also note in i=3 the semicolon is omitted, so it stays behind after removing
+	\ c: ['printf("%|", ', ');', 'printf(".*", ', ')'],
+	\ }
 
 " if nothing is defined for filetype, it uses ["print(", ")"]
 ```
