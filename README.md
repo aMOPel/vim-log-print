@@ -10,21 +10,33 @@ Use any **plugin manager** (vim-plug, dein, ...) or use Vims **built-in plugin s
 
 **Optional:**
 
-Install https://github.com/Shougo/context_filetype.vim as well for embedded filetypes.
+Install https://github.com/Shougo/context_filetype.vim as well for **embedded filetypes**, eg. javascript in html.
 
+## Features
+
+* **preserve indentation**
+* **preserve semicolon** at end of line
+* **toggle** on and off
+* add **below or above** on a new line
+* define your **own language specific strings**
+* define your **own cursor position**
+* puts **cursor at a good spot** by default
+* goes into **insert mode** when calling on an **empty/new line**
+* **optional support** for [**context_filetype**](https://github.com/Shougo/context_filetype.vim) (this might be unstable)
+		
 ## Usage
 
 See [Defaults](#Defaults) to turn default mappings off.
 
-`gl` to **toggle** the logprint string for the current line.
+* `gl` to **toggle** the logprint string for the current line.
 
-`]g` to make a new line **below** with the logprint string and go in insert mode.
+* `]g` to make a new line **below** with the logprint string and go in insert mode.
 
-`[g` same but **above**.
+* `[g` same but **above**.
 
-`gl` isn't used in vim by default .
+`gl` **isn't used** in vim by default.
 
-`]g` and `[g` are in [unimpaired](https://github.com/tpope/vim-unimpaired) style and also not used by vim or unimpaired.
+`]g` and `[g` are in [unimpaired](https://github.com/tpope/vim-unimpaired) style and also **not used** by vim or unimpaired.
 
 ### Example
 ```javascript
@@ -59,19 +71,6 @@ printf("%d|", test());
 // press gl again
 test();
 ```
-
-## Features
-
-* preserve indentation
-* preserve semicolon at end of line
-* toggle on and off
-* add below or above
-* define your own language specific strings
-* define your own cursor position
-* puts cursor before closing parenthesis
-* goes into insert mode at the right spot when calling on an empty/new line
-* optional support for [context_filetype](https://github.com/Shougo/context_filetype.vim) (this might be unstable)
-		
 
 ## Defaults
 
@@ -116,7 +115,7 @@ like **ultisnips or vsnip**.
 
 The logprint string is determined every time you invoke the command based on 
 the value of `&l:filetype or context_filetype#get_filetype()`. 
-This means there are no autocmds involved, but there is a slight overhead
+This means there are **no autocmds** involved, but there is a **slight overhead**
 for every call to the plugin.
 
 Toggling the string on in a non empty line should rarely be useful, because in a logprint
