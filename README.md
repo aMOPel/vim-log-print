@@ -2,11 +2,11 @@
 
 Like a **commenter plugin**, but for **log/print** statements
 
-meant for the *quick and dirty* debug
+Meant for the *quick and dirty* debug.
 
 ## Installation
 
-Use any plugin manager (vim-plug, dein, ...) or use Vims built-in plugin system.
+Use any **plugin manager** (vim-plug, dein, ...) or use Vims **built-in plugin system**.
 
 **Optional:**
 
@@ -16,15 +16,15 @@ Install https://github.com/Shougo/context_filetype.vim as well for embedded file
 
 See [Defaults](#Defaults) to turn default mappings off.
 
-Press `gl` to **toggle** the logprint string for the current line
+`gl` to **toggle** the logprint string for the current line.
 
-Press `]g` to make a new line **below** with the logprint string and go in insert mode
+`]g` to make a new line **below** with the logprint string and go in insert mode.
 
-Press `[g` same but **above**
+`[g` same but **above**.
 
-`gl` isn't mapped by default 
+`gl` isn't used in vim by default .
 
-and `]g` `[g` are in [unimpaired](https://github.com/tpope/vim-unimpaired) style and also unmapped
+`]g` and `[g` are in [unimpaired](https://github.com/tpope/vim-unimpaired) style and also not used by vim or unimpaired.
 
 ### Example
 ```javascript
@@ -93,14 +93,16 @@ let s:default_languages = #{
 	\ vim: #{pre:"echomsg "}, " one string
 	\ python: #{pre:"print(", post:")"}, " two strings
 	\ javascript: #{pre:"console.log(", post:")"},			
+
 	" pre contains | which specifies cursor position after adding
 	" if preremove and postremove are given they are used as regex for removal
 	" this is necessay when you plan to modify the added strings, else toggling off will fail
 	" also note in postremove the semicolon is omitted, so it stays behind after removing
 	" if insert = 1 it always goes into insert mode
 	\ c: #{insert:1, pre:'printf("%|", ', post:');', preremove:'printf(".*", ', postremove:')'},
+
 	" in pre and post the 'set magic' characters are escaped properly so having eg \n works
-	" when toggling off, only the last token surrounded by << token << will remain
+	" when toggling off, only the last token surrounded (<< token <<) will remain + semicolon
 	\ cpp: #{pre:"std::cout << |", post:' << "\n";', preremove:'std::cout.*<<\s', postremove:'\s<<[^;]*'},
 	\ }
 
@@ -109,14 +111,14 @@ let s:default_languages = #{
 
 ## Caveats
 
+A lot of this functionality can be done with a **snippet plugin** 
+like **ultisnips or vsnip**.
+
 The logprint string is determined every time you invoke the command based on 
 the value of `&l:filetype or context_filetype#get_filetype()`. 
 This means there are no autocmds involved, but there is a slight overhead
 for every call to the plugin.
 
-A lot of this functionality can be done with a **snippet plugin** 
-like ultisnips or vsnip.
-
 Toggling the string on in a non empty line should rarely be useful, because in a logprint
-usually goes an expression, however you don't usually have expression laying 
+usually goes an expression, however you don't usually have expressions laying 
 around in your code, without using them somehow.
