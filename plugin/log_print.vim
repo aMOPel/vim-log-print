@@ -7,6 +7,8 @@ if !exists("g:log_print#default_mappings")
 	let g:log_print#default_mappings = 1
 endif
 
+let s:installed_context_filetype = (globpath(&runtimepath, 'autoload/context_filetype.vim') !=# '')
+
 let s:default_languages = #{
 	\ python: #{pre:"print(", post:")"},
 	\ javascript: #{pre:"console.log(", post:")"},
@@ -31,7 +33,12 @@ endfunction
 function! s:toggle() abort
 	let line_nr = line('.')
 	let str = getline(line_nr)
-	let wrap = has_key(s:get_languages(), &ft) ? s:get_languages()[&ft] : s:get_languages().python
+  if s:installed_context_filetype
+    let conft = context_filetype#get_filetype()
+  else
+    let conft = &l:filetype
+  endif
+	let wrap = has_key(s:get_languages(), conft) ? s:get_languages()[conft] : s:get_languages().python
 	if has_key(wrap, 'preremove') && has_key(wrap, 'postremove')
 		let i = get(wrap, 'preremove', '')
 	else
@@ -89,8 +96,27 @@ function! s:add(wrap) abort
 	endif
 endfunction
 
+function! s:toggle_new_line(above) abort
+	let line_nr = line('.')
+	let str = getline(line_nr)
+	let indent = matchlist(str, '\v^(\s*)')
+	echomsg indent
+	if a:above
+		norm O
+	else
+		norm o
+		let line_nr += 1
+	endif
+	call setline(line_nr, indent[1])
+	call s:toggle()
+endfunction
+
 command! LogPrintToggle call s:toggle()
+command! LogPrintBelow call s:toggle_new_line(0)
+command! LogPrintAbove call s:toggle_new_line(1)
 
 if g:log_print#default_mappings
 	nnoremap <silent> gl <esc>:<c-u>LogPrintToggle<cr>
+	nnoremap <silent> [g <esc>:<c-u>LogPrintAbove<cr>
+	nnoremap <silent> ]g <esc>:<c-u>LogPrintBelow<cr>
 endif

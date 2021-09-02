@@ -1,13 +1,29 @@
 # vim-log-print
 
-like commenter plugin, but for print/log statements
+Like a **commenter plugin**, but for **log/print** statements
 
-press `gl` to toggle the logprint string
+meant for the *quick and dirty* debug
 
-`gl` isn't mapped in vim by default
+## Installation
 
-## example
+Use any plugin manager (vim-plug, dein, ...) or use Vims built-in plugin system.
 
+**Optional:**
+
+Install https://github.com/Shougo/context_filetype.vim as well for embedded filetypes.
+
+## Usage
+
+See [Defaults](#Defaults) to turn default mappings off.
+
+Press `gl` to **toggle** the logprint string for the current line
+Press `]g` to make a new line **below** with the logprint string and go in insert mode
+Press `[g` same but **above**
+
+`gl` isn't mapped by default 
+and `]g` `[g` are in [unimpaired](https://github.com/tpope/vim-unimpaired) style and also unmapped
+
+### Example
 ```javascript
 // example for javascript
 // | is cursor
@@ -16,12 +32,16 @@ te|st();
 console.log(test()|);
 // press gl again
 test()|;
+// press go
+// goes into insert mode
+test();
+console.log(|);
 
 // empty line with indentation
 		|
 // press gl
 // doesn't add the semicolon, only preserves it if it's already there
-// goes into insertmode if nothing is wrapped
+// goes into insert mode if nothing is wrapped
 		console.log(|)
 // press gl again (in normal mode)
 		|
@@ -29,52 +49,71 @@ test()|;
 ```c
 // example c
 te|st();
-// press gl
+// press gl (goes into insert for c by default, see #Defaults)
 printf("%|", test());
-// press id<esc>
+// press d<esc>
 printf("%d|", test());
 // press gl again
 test();
 ```
 
-## features
+## Features
 
 * preserve indentation
 * preserve semicolon at end of line
 * toggle on and off
+* add below or above
 * define your own language specific strings
 * define your own cursor position
 * puts cursor before closing parenthesis
-* goes into insert mode at the right spot when calling on an empty line
+* goes into insert mode at the right spot when calling on an empty/new line
+* optional support for [context_filetype](https://github.com/Shougo/context_filetype.vim) (this might be unstable)
+		
 
-## defaults
+## Defaults
 
 ```vim
-" turn default mappings on/off
+" turn default mappings on=1/off=0
 let g:log_print#default_mappings = 1
 
 " if you dont like it turn default mappings off and make your own mapping
 nnoremap <silent> gl <esc>:<c-u>LogPrintToggle<cr>
+nnoremap <silent> [g <esc>:<c-u>LogPrintAbove<cr>
+nnoremap <silent> ]g <esc>:<c-u>LogPrintBelow<cr>
 
-" add more languages strings in here in your rc
-" key must match filetype, values must be array with 1 or 2 or 4 strings
+" add your own languages strings in here in your vimrc
+" keys must match filetypes, values must be dict with specific keys
 let g:log_print#languages = {}
 
 " keys in g:log_print#languages override keys in here
 let s:default_languages = #{
-" one string
-	\ vim: ["echomsg "],
-" two strings
-	\ python: ["print(", ")"],
-	\ javascript: ["console.log(", ")"],			
-" in i=0 and i=1 the magic characters are escaped properly so having eg \n works
-	\ cpp: ["std::cout << ", ' << "\n";'],
-" i=0 contains | which specifies cursor position after adding
-" if i=2 and i=3 are given they are used as regex for removal
-" this is necessay when you plan to modify the added strings
-" also note in i=3 the semicolon is omitted, so it stays behind after removing
-	\ c: ['printf("%|", ', ');', 'printf(".*", ', ')'],
+	\ vim: #{pre:"echomsg "}, " one string
+	\ python: #{pre:"print(", post:")"}, " two strings
+	\ javascript: #{pre:"console.log(", post:")"},			
+	" pre contains | which specifies cursor position after adding
+	" if preremove and postremove are given they are used as regex for removal
+	" this is necessay when you plan to modify the added strings, else toggling off will fail
+	" also note in postremove the semicolon is omitted, so it stays behind after removing
+	" if insert = 1 it always goes into insert mode
+	\ c: #{insert:1, pre:'printf("%|", ', post:');', preremove:'printf(".*", ', postremove:')'},
+	" in pre and post the 'set magic' characters are escaped properly so having eg \n works
+	" when toggling off, only the last token surrounded by << token << will remain
+	\ cpp: #{pre:"std::cout << |", post:' << "\n";', preremove:'std::cout.*<<\s', postremove:'\s<<[^;]*'},
 	\ }
 
-" if nothing is defined for filetype, it uses ["print(", ")"]
+" if nothing is defined for the filetype, it uses #{pre:"print(", post:")"}
 ```
+
+## Caveats
+
+The logprint string is determined every time you invoke the command based on 
+the value of `&l:filetype or context_filetype#get_filetype()`. 
+This means there are no autocmds involved, but there is a slight overhead
+for every call to the plugin.
+
+A lot of this functionality can be done with a **snippet plugin** 
+like ultisnips or vsnip.
+
+Toggling the string on in a non empty line should rarely be useful, because in a logprint
+usually goes an expression, however you don't usually have expression laying 
+around in your code, without using them somehow.
