@@ -121,3 +121,8 @@ for every call to the plugin.
 Toggling the string on in a non empty line should rarely be useful, because in a logprint
 usually goes an expression, however you don't usually have expressions laying 
 around in your code, without using them somehow.
+
+## Related Projects
+
+https://github.com/mptre/vim-printf
+https://github.com/polarmutex/contextprint.nvim
