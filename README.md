@@ -17,10 +17,13 @@ Install https://github.com/Shougo/context_filetype.vim as well for embedded file
 See [Defaults](#Defaults) to turn default mappings off.
 
 Press `gl` to **toggle** the logprint string for the current line
+
 Press `]g` to make a new line **below** with the logprint string and go in insert mode
+
 Press `[g` same but **above**
 
 `gl` isn't mapped by default 
+
 and `]g` `[g` are in [unimpaired](https://github.com/tpope/vim-unimpaired) style and also unmapped
 
 ### Example
@@ -32,7 +35,7 @@ te|st();
 console.log(test()|);
 // press gl again
 test()|;
-// press go
+// press ]g
 // goes into insert mode
 test();
 console.log(|);
@@ -40,7 +43,7 @@ console.log(|);
 // empty line with indentation
 		|
 // press gl
-// doesn't add the semicolon, only preserves it if it's already there
+// doesn't add the semicolon, only preserves it if it's already there (you can change this)
 // goes into insert mode if nothing is wrapped
 		console.log(|)
 // press gl again (in normal mode)
