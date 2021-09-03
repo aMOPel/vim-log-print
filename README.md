@@ -29,14 +29,13 @@ Install https://github.com/Shougo/context_filetype.vim as well for **embedded fi
 See [Defaults](#Defaults) to turn **default mappings off**.
 
 * `gl` to **toggle** the logprint string for the current line.
-
 * `]g` to make a new line **below** with the logprint string and go in insert mode.
-
 * `[g` same but **above**.
 
-`gl` **isn't used** in vim by default.
-
+`gl` **isn't used** in vim by default.\
 `]g` and `[g` are in [unimpaired](https://github.com/tpope/vim-unimpaired) style and also **not used** by vim or unimpaired.
+
+---
 
 Put this in your **vimrc** to define your **own language strings**, as the [Defaults](#Defaults) are limited.
 
@@ -98,7 +97,7 @@ nnoremap <silent> ]g <esc>:<c-u>LogPrintBelow<cr>
 let g:log_print#languages = {}
 
 " keys in g:log_print#languages override keys in here
-" these are the strings defines by the plugin
+" these are the strings defined by the plugin
 let s:default_languages = #{
 	\ vim: #{pre:"echomsg "}, " one string
 	\ python: #{pre:"print(", post:")"}, " two strings
