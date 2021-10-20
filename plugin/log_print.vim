@@ -115,8 +115,12 @@ command! LogPrintToggle call s:toggle()
 command! LogPrintBelow call s:toggle_new_line(0)
 command! LogPrintAbove call s:toggle_new_line(1)
 
+nnoremap <Plug>LogPrintToggle <esc>:<c-u>LogPrintToggle<cr>
+nnoremap <Plug>LogPrintAbove <esc>:<c-u>LogPrintAbove<cr>
+nnoremap <Plug>LogPrintBelow <esc>:<c-u>LogPrintBelow<cr>
+
 if g:log_print#default_mappings
-	nnoremap <silent> gl <esc>:<c-u>LogPrintToggle<cr>
-	nnoremap <silent> [g <esc>:<c-u>LogPrintAbove<cr>
-	nnoremap <silent> ]g <esc>:<c-u>LogPrintBelow<cr>
+	nmap <silent> gl <Plug>LogPrintToggle
+	nmap <silent> [g <Plug>LogPrintAbove
+	nmap <silent> ]g <Plug>LogPrintBelow
 endif
